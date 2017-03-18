@@ -15,6 +15,7 @@ public class Todo implements ReadOnlyTodo {
     private Name name;
     private Date starttime;
     private Date endtime;
+    private Date completeTime;
 
     private UniqueTagList tags;
 
@@ -90,6 +91,15 @@ public class Todo implements ReadOnlyTodo {
         return endtime;
     }
 
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
+    }
+
+    @Override
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
     @Override
     public UniqueTagList getTags() {
         return new UniqueTagList(tags);
@@ -111,6 +121,7 @@ public class Todo implements ReadOnlyTodo {
         this.setName(replacement.getName());
         this.setStartTime(replacement.getStartTime());
         this.setEndTime(replacement.getEndTime());
+        this.setCompleteTime(replacement.getCompleteTime());
         this.setTags(replacement.getTags());
     }
 
@@ -124,7 +135,7 @@ public class Todo implements ReadOnlyTodo {
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, starttime, endtime, tags);
+        return Objects.hash(name, starttime, endtime, completeTime, tags);
     }
 
     @Override
