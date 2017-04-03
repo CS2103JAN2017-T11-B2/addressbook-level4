@@ -113,6 +113,35 @@ public class AddCommandTest extends TodoListGuiTest {
     }
 
     @Test
+    public void recurringAddTest() {
+        TestTodo[] currentList = td.getTypicalTodos();
+        String name = "recurringAdd";
+        String startTime = "11:00AM";
+        String endTime = "12:00PM";
+        String tags = "recurringtags";
+        String startDate = "6/4/17";
+        String endMonth = "5/17";
+        TestTodo[] addTestTodoList = new TestTodo[8];
+        String[] addDate = { "6/4/17", "13/4/17", "20/4/17", "27/4/17", "4/5/17",
+            "11/5/17", "18/5/17", "25/5/17" };
+        String[] addDateName = { "06 04 17", "13 04 17", "20 04 17", "27 04 17", "04 05 17",
+            "11 05 17", "18 05 17", "25 05 17" };
+        for (int i = 0; i < 8; i++) {
+            try {
+                addTestTodoList[i] = new TodoBuilder().withName(name + addDateName[i]).
+                        withStartTime(startTime + " " + addDate[i]).
+                        withEndTime(endTime + " " + addDate[i]).withTags(tags).build();
+            } catch (IllegalValueException e) {
+                e.printStackTrace();
+            }
+        }
+        assertRecurringddSuccess(name + " " + startTime + " " + endTime +
+                " " + tags + " " + startDate + " " + endMonth, addTestTodoList, currentList);
+    }
+
+//add taskname s/11:00AM e/12:00PM t/recurringEvent r/6/4/2017 4/2017
+
+    @Test
     public void invalidDateTimeInputTest() {
         commandBox.runCommand("add invalidDateTimeInput s/11");
         assertResultMessage(AddCommand.MESSAGE_INVALID_TIME);
@@ -132,6 +161,24 @@ public class AddCommandTest extends TodoListGuiTest {
         //confirm the list now contains all previous todos plus the new todo
         TestTodo[] expectedList = TestUtil.addTodosToList(currentList, todoToAdd);
         assertTrue(todoListPanel.isListMatching(true, expectedList));
+    }
+
+    private void assertRecurringddSuccess(String commandInfo, TestTodo[] addTestTodoList, TestTodo... currentList) {
+
+        String[] addCommand = commandInfo.split(" ");
+        commandBox.runCommand("add" + " " + addCommand[0] + " " + "s/" + addCommand[1] + " " + "e/" +
+                addCommand[2] + " " + "t/" + addCommand[3] + " " + "r/" + addCommand[4] + " " + addCommand[5]);
+        for (int i = 0; i < addTestTodoList.length; i++) {
+          //confirm the new card contains the right data
+            TodoCardHandle addedCard = todoListPanel.navigateToTodo(addTestTodoList[i].getName().fullName);
+            assertMatching(addTestTodoList[i], addedCard);
+
+        }
+        /*
+        //confirm the list now contains all previous todos plus the new todo
+        TestTodo[] expectedList = TestUtil.addTodosToList(currentList, todoToAdd);
+        assertTrue(todoListPanel.isListMatching(true, expectedList));
+        */
     }
 
     private String getTomorrowMidnighttoString(Date dt) {

@@ -5,6 +5,7 @@ import static seedu.todolist.commons.core.GlobalConstants.DATE_FORMAT;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -34,12 +35,14 @@ public class AddCommand extends Command {
             + " Take dog for walk s/1:00PM 11/11/17 e/2:00PM 11/11/17 t/todoal";
 
     public static final String MESSAGE_SUCCESS = "New todo added: %1$s";
+    public static final String MESSAGE_ADD_RECUR_SUCCESS = "New todos added from %1$s\n to %1$s";
     public static final String MESSAGE_DUPLICATE_TODO = "This todo already exists in the todo list";
     public static final String MESSAGE_INVALID_STARTTIME = "Invalid start time entered";
     public static final String MESSAGE_INVALID_ENDTIME = "Invalid end time entered";
     public static final String MESSAGE_INVALID_TIME = "Invalid time entered";
 
     private final Todo toAdd;
+    private ArrayList<Todo> toAddRecur;
 
     //@@author A0163720M ,A0165043M
     /**
@@ -78,6 +81,7 @@ public class AddCommand extends Command {
 
             // Todo(name, start_time, end_time, complete_time, taglist)
             this.toAdd = new Todo(name, start, end, null, tagList);
+            this.toAddRecur = null;
         } catch (IllegalValueException e) {
             throw e;
         }
@@ -95,6 +99,37 @@ public class AddCommand extends Command {
         // and the first line must be the call to the constructor, not try{}
         this(todo, Optional.empty(), endTime, tags);
     }
+
+    public AddCommand(String todo, Date startTime, Date endTime, Set<String> tags, Date startDate,
+            Date monthAndYear)
+            throws IllegalValueException {
+        this.toAdd = null;
+        try {
+            Date dateCounter = startDate;
+            Date endMonthAndYear = addMonth(monthAndYear);
+            this.toAddRecur = new ArrayList<Todo>();
+            DateFormat dateFormat = new SimpleDateFormat("dd MM yy");
+            while (dateCounter.before(endMonthAndYear)) {
+                Name name = (todo != null) ? new Name(todo + dateFormat.format(dateCounter)) : null;
+                Set<Tag> tagSet = new HashSet<>();
+                for (String tagName : tags) {
+                    tagSet.add(new Tag(tagName));
+                }
+                UniqueTagList tagList = new UniqueTagList(tagSet);
+                this.toAddRecur.add(new Todo(name, combineDateTime(dateCounter, startTime),
+                        combineDateTime(dateCounter, endTime), tagList));
+                dateCounter = addWeek(dateCounter);
+            }
+        } catch (IllegalValueException e) {
+            throw e;
+        }  catch (ParseException e) {
+            try {
+                throw new ParseException(AddCommand.MESSAGE_INVALID_TIME, 0);
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
     //@@author
 
     //@@author A0163720M
@@ -111,25 +146,37 @@ public class AddCommand extends Command {
     @Override
     public CommandResult execute() throws CommandException {
         assert model != null;
-        try {
-            model.addTodo(toAdd);
-            return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd));
-        } catch (UniqueTodoList.DuplicateTodoException e) {
-            throw new CommandException(MESSAGE_DUPLICATE_TODO);
+        if (toAdd == null) {
+            try {
+                for (int counter = 0; counter < toAddRecur.size(); counter++) {
+                    model.addTodo(toAddRecur.get(counter));
+                }
+            } catch (UniqueTodoList.DuplicateTodoException e) {
+                throw new CommandException(MESSAGE_DUPLICATE_TODO);
+            }
+            return new CommandResult(String.format(MESSAGE_ADD_RECUR_SUCCESS, toAddRecur.get(0),
+                toAddRecur.get(toAddRecur.size() - 1))); //need more info.
+        } else {
+            try {
+                model.addTodo(toAdd);
+                return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd));
+            } catch (UniqueTodoList.DuplicateTodoException e) {
+                throw new CommandException(MESSAGE_DUPLICATE_TODO);
+            }
         }
     }
+
     public Date getTomorrowMidnight() {
         Date dt = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(dt);
         c.add(Calendar.DATE, 1);
         dt = c.getTime();
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        DateFormat dateTimeFormat = new SimpleDateFormat("h:mma dd/MM/yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+        DateFormat dateTimeFormat = new SimpleDateFormat("h:mma dd/MM/yy");
         try {
             dt = dateTimeFormat.parse("12:00am" + " " + dateFormat.format(dt));
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return dt;
@@ -140,14 +187,35 @@ public class AddCommand extends Command {
         Calendar c = Calendar.getInstance();
         c.setTime(dt);
         dt = c.getTime();
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        DateFormat dateTimeFormat = new SimpleDateFormat("h:mma dd/MM/yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+        DateFormat dateTimeFormat = new SimpleDateFormat("h:mma dd/MM/yy");
         try {
             dt = dateTimeFormat.parse("12:00am" + " " + dateFormat.format(dt));
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return dt;
+    }
+    private Date addMonth(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.MONTH, 1);  // number of days to add
+        return c.getTime();  // dt is now the new date
+    }
+    private Date addWeek(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DATE, 7);  // number of days to add
+        return c.getTime();  // dt is now the new date
+    }
+    private Date combineDateTime(Date date, Date time) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mma");
+        SimpleDateFormat returnFormat = new SimpleDateFormat("h:mma dd/MM/yy");
+        try {
+            return returnFormat.parse(timeFormat.format(time) + " " + dateFormat.format(date));
+        } catch (ParseException e) {
+            throw new ParseException(AddCommand.MESSAGE_INVALID_TIME, 0);
+        }
     }
 }
