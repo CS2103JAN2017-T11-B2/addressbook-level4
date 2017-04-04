@@ -127,10 +127,16 @@ public class AddCommandParser {
         }
     }
     private Date getMonth (String month) throws ParseException {
+        if (month.split("/").length > 2) {
+            throw new ParseException(AddCommand.MESSAGE_INVALID_RECURRING_DATE, 0);
+        }
         DateFormat dateFormat = new SimpleDateFormat("MM/yyyy");
         return dateFormat.parse(month);
     }
     private Date getTimeRecur (Optional<String> time) throws ParseException {
+        if (time.get().contains(" ")) {
+            throw new ParseException(AddCommand.MESSAGE_INVALID_TIME, 0);
+        }
         DateFormat dateFormat = new SimpleDateFormat("h:mma");
         return dateFormat.parse(time.get());
     }

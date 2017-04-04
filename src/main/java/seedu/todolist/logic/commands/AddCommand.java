@@ -40,6 +40,7 @@ public class AddCommand extends Command {
     public static final String MESSAGE_INVALID_STARTTIME = "Invalid start time entered";
     public static final String MESSAGE_INVALID_ENDTIME = "Invalid end time entered";
     public static final String MESSAGE_INVALID_TIME = "Invalid time entered";
+    public static final String MESSAGE_INVALID_RECURRING_DATE = "Invalid recurring date entered";
 
     private final Todo toAdd;
     private ArrayList<Todo> toAddRecur;
@@ -109,8 +110,11 @@ public class AddCommand extends Command {
             Date endMonthAndYear = addMonth(monthAndYear);
             this.toAddRecur = new ArrayList<Todo>();
             DateFormat dateFormat = new SimpleDateFormat("dd MM yy");
+            if (dateCounter.after(endMonthAndYear)) {
+                throw new IllegalValueException(AddCommand.MESSAGE_INVALID_RECURRING_DATE);
+            }
             while (dateCounter.before(endMonthAndYear)) {
-                Name name = (todo != null) ? new Name(todo + dateFormat.format(dateCounter)) : null;
+                Name name = (todo != null) ? new Name(todo + " " + dateFormat.format(dateCounter)) : null;
                 Set<Tag> tagSet = new HashSet<>();
                 for (String tagName : tags) {
                     tagSet.add(new Tag(tagName));
