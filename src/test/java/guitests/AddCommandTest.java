@@ -135,7 +135,7 @@ public class AddCommandTest extends TodoListGuiTest {
                 e.printStackTrace();
             }
         }
-        assertRecurringddSuccess(name + " " + startTime + " " + endTime +
+        assertRecurringAddSuccess(name + " " + startTime + " " + endTime +
                 " " + tags + " " + startDate + " " + endMonth, addTestTodoList, currentList);
     }
 
@@ -179,7 +179,7 @@ public class AddCommandTest extends TodoListGuiTest {
         assertTrue(todoListPanel.isListMatching(true, expectedList));
     }
 
-    private void assertRecurringddSuccess(String commandInfo, TestTodo[] addTestTodoList, TestTodo... currentList) {
+    private void assertRecurringAddSuccess(String commandInfo, TestTodo[] addTestTodoList, TestTodo... currentList) {
 
         String[] addCommand = commandInfo.split(" ");
         commandBox.runCommand("add" + " " + addCommand[0] + " " + "s/" + addCommand[1] + " " + "e/" +
