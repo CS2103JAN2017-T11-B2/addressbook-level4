@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <todolist>
     <todos>
-        <name>asdf</name>
-        <startTime></startTime>
-        <endTime></endTime>
+        <name>taskname 06 04 17</name>
+        <startTime>Thu Apr 06 11:00:00 CST 2017</startTime>
+        <endTime>Thu Apr 06 12:00:00 CST 2017</endTime>
         <completeTime></completeTime>
+        <tagged>recurringEvent</tagged>
     </todos>
     <todos>
-        <name>asdf2</name>
-        <startTime></startTime>
-        <endTime></endTime>
+        <name>taskname 13 04 17</name>
+        <startTime>Thu Apr 13 11:00:00 CST 2017</startTime>
+        <endTime>Thu Apr 13 12:00:00 CST 2017</endTime>
         <completeTime></completeTime>
+        <tagged>recurringEvent</tagged>
     </todos>
     <todos>
-        <name>asdf1</name>
-        <startTime></startTime>
-        <endTime></endTime>
+        <name>taskname 20 04 17</name>
+        <startTime>Thu Apr 20 11:00:00 CST 2017</startTime>
+        <endTime>Thu Apr 20 12:00:00 CST 2017</endTime>
         <completeTime></completeTime>
+        <tagged>recurringEvent</tagged>
     </todos>
+    <todos>
+        <name>taskname 27 04 17</name>
+        <startTime>Thu Apr 27 11:00:00 CST 2017</startTime>
+        <endTime>Thu Apr 27 12:00:00 CST 2017</endTime>
+        <completeTime></completeTime>
+        <tagged>recurringEvent</tagged>
+    </todos>
+    <tags>recurringEvent</tags>m
 </todolist>
